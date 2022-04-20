@@ -1,4 +1,5 @@
-$ThisVersion := "0.5"
+ThisVersion := "0.5"
+appName := "QuickSwitch v" ThisVersion 
 
 ;@Ahk2Exe-SetVersion 0.5
 ;@Ahk2Exe-SetName QuickSwitch
@@ -21,6 +22,16 @@ Info	: https://www.voidtools.com/forum/viewtopic.php?f=2&t=9881
 	SendMode Input					; Recommended for new scripts due to its superior speed and reliability.
 	SetWorkingDir %A_ScriptDir%		; Ensures a consistent starting directory.
 	#singleinstance force
+
+	;//////// Create Menu //////////////////////////
+	Menu, Tray, NoStandard
+	Menu, Tray, Add, % appName, Dummy
+	Menu, Tray, Default, % appName
+	Menu, Tray, Add
+	Menu, Tray, Icon, %A_ScriptDir%\res\icon.ico
+	; Menu, Tray, Add, Edit, Edit
+	Menu, Tray, Add, Reload, Reload
+	Menu, Tray, Add, Exit, Exit
 
 
 ;	Total Commander internal codes
@@ -1195,6 +1206,14 @@ return
 
 Return
 
+;_____________________________________________________________________________
+				; Tray Menu Options
+;_____________________________________________________________________________
+reload:
+	Reload
+Exit:
+	ExitApp
+Return
 
 /*
 ============================================================================
