@@ -1,5 +1,6 @@
 ThisVersion := "0.5"
-appName := "QuickSwitch v" ThisVersion 
+appName := "QuickSwitch v" ThisVersion
+shortcutPath := "C:\Users\" A_UserName "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" A_ScriptName " - Shortcut.lnk"
 
 ;@Ahk2Exe-SetVersion 0.5
 ;@Ahk2Exe-SetName QuickSwitch
@@ -28,10 +29,14 @@ Info	: https://www.voidtools.com/forum/viewtopic.php?f=2&t=9881
 	Menu, Tray, Add, % appName, Dummy
 	Menu, Tray, Default, % appName
 	Menu, Tray, Add
+	Menu, Tray, Add, Start with Windows, toggleStartUp
+	Menu, Tray, Add
 	Menu, Tray, Icon, %A_ScriptDir%\res\icon.ico
 	; Menu, Tray, Add, Edit, Edit
 	Menu, Tray, Add, Reload, Reload
 	Menu, Tray, Add, Exit, Exit
+	;/////// Check Start with Windows Menu /////////
+	gosub, CheckStartWithWindowsMenu
 
 
 ;	Total Commander internal codes
@@ -1214,6 +1219,26 @@ reload:
 Exit:
 	ExitApp
 Return
+
+;_____________________________________________________________________________
+				; Start With Windows
+;_____________________________________________________________________________
+toggleStartUp:
+	if (FileExist(shortcutPath)) {
+		FileDelete, % shortcutPath
+		Menu, Tray, Uncheck, Start with Windows
+	}
+	else {
+		FileCreateShortcut, % A_ScriptFullPath, % shortcutPath
+		Menu, Tray, Check, Start with Windows
+	}
+	return
+
+CheckStartWithWindowsMenu:
+	
+	if (FileExist(shortcutPath))
+		Menu, Tray, Check, Start with Windows
+	return
 
 /*
 ============================================================================
