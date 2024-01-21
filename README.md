@@ -47,8 +47,8 @@ On the To-Do list for the near future are:
 - A better user interface. There will be a simplified menu with less 'technical' entries.
 Suggestions are welcome.
 - A different way to 'talk with' Total Commander an XYplorer
-- A notification area (/system tray) menu, including icon
-- Option to load at startup
+- A notification area (/system tray) menu, including icon [ Done ]
+- Option to load at startup [ Done ]
 <br />
 <br />
 

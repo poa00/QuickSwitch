@@ -1,4 +1,6 @@
-$ThisVersion := "0.5"
+ThisVersion := "0.5"
+appName := "QuickSwitch v" ThisVersion
+shortcutPath := "C:\Users\" A_UserName "\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\" A_ScriptName " - Shortcut.lnk"
 
 ;@Ahk2Exe-SetVersion 0.5
 ;@Ahk2Exe-SetName QuickSwitch
@@ -22,7 +24,6 @@ Info	: https://www.voidtools.com/forum/viewtopic.php?f=2&t=9881
 	SetWorkingDir %A_ScriptDir%		; Ensures a consistent starting directory.
 	#singleinstance force
 
-
 ;	Total Commander internal codes
 	global cm_CopySrcPathToClip  := 2029
 	global cm_CopyTrgPathToClip  := 2030
@@ -32,8 +33,6 @@ Info	: https://www.voidtools.com/forum/viewtopic.php?f=2&t=9881
 
 	FunctionShowMenu := Func("ShowMenu")
 	Hotkey, ^Q, %FunctionShowMenu%, Off
-
-
 
 
 ;	INI file ( <program name without extension>.INI)
@@ -66,7 +65,22 @@ Info	: https://www.voidtools.com/forum/viewtopic.php?f=2&t=9881
 		ExitApp
 	}
 
-
+;//////// Create Menu //////////////////////////
+	Menu, Tray, NoStandard
+	Menu, Tray, Add, % appName, Dummy
+	Menu, Tray, Default, % appName
+	Menu, Tray, Add
+	Menu, Tray, Add, Start with Windows, toggleStartUp
+	Menu, Tray, Add, Always AutoSwitch, toogleAlwaysSwitch
+	Menu, Tray, Add
+	Menu, Tray, Icon, %A_ScriptDir%\res\icon.ico
+	; Menu, Tray, Add, Edit, Edit
+	Menu, Tray, Add, Reload, Reload
+	Menu, Tray, Add, Exit, Exit
+	;/////// Check Start with Windows Menu /////////
+	gosub, CheckStartWithWindowsMenu
+	;/////// Check Always AutoSwitch Menu /////////
+	gosub, CheckAlwaysSwitch
 
 loop
 {
@@ -97,9 +111,11 @@ loop
 
 	;	Check if FingerPrint entry is already in INI, so we know what to do.
 		IniRead, $DialogAction, %$INI%, Dialogs, %$FingerPrint%
-
-
-		If ($DialogAction = 1 )   								;	======= AutoSwitch ==
+		
+	;   Check if Always Auto Switch is Active
+		IniRead, AlwaysSwitch, %$INI%, Preferences, Always Auto Switch
+		
+		If (($DialogAction = 1) OR (AlwaysSwitch = 1))   								;	======= AutoSwitch ==
 		{	
 			$FolderPath := Get_Zfolder($WinID)
 
@@ -1195,7 +1211,50 @@ return
 
 Return
 
+;_____________________________________________________________________________
+				; Tray Menu Options
+;_____________________________________________________________________________
+reload:
+	Reload
+Exit:
+	ExitApp
+Return
 
+;_____________________________________________________________________________
+				; Start With Windows
+;_____________________________________________________________________________
+toggleStartUp:
+	if (FileExist(shortcutPath)) {
+		FileDelete, % shortcutPath
+		Menu, Tray, Uncheck, Start with Windows
+	}
+	else {
+		FileCreateShortcut, % A_ScriptFullPath, % shortcutPath
+		Menu, Tray, Check, Start with Windows
+	}
+	return
+
+CheckStartWithWindowsMenu:
+	if (FileExist(shortcutPath))
+		Menu, Tray, Check, Start with Windows
+	return
+
+toogleAlwaysSwitch:
+	IniRead, AlwaysSwitch, %$INI%, Preferences, Always Auto Switch
+	if ((AlwaysSwitch = "ERROR") OR (AlwaysSwitch = 0)) {
+		IniWrite, 1, %$INI%, Preferences, Always Auto Switch
+		Menu, Tray, Check, Always AutoSwitch
+	} else {
+		IniWrite, 0, %$INI%, Preferences, Always Auto Switch
+		Menu, Tray, Uncheck, Always AutoSwitch
+	}
+	return
+
+CheckAlwaysSwitch:
+	IniRead, AlwaysSwitch, %$INI%, Preferences, Always Auto Switch
+	if (AlwaysSwitch = 1)
+		Menu, Tray, Check, Always AutoSwitch
+	return
 /*
 ============================================================================
 */
